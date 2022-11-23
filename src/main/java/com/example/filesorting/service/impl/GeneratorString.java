@@ -5,7 +5,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LineGeneratorServiceImpl implements LineGeneratorService {
+public class GeneratorString implements LineGeneratorService {
 
     @Override
     public String generate(int maxLineLength) {

@@ -1,7 +1,7 @@
 package com.example.filesorting.service.impl;
 
 import com.example.filesorting.config.AppConfiguration;
-import com.example.filesorting.entite.Line;
+import com.example.filesorting.entity.Line;
 import com.example.filesorting.service.FileService;
 import com.example.filesorting.service.LineGeneratorService;
 import com.example.filesorting.service.LineSorterService;
@@ -17,7 +17,7 @@ import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
-public class LineSorterServiceImpl implements LineSorterService {
+public class FileHandler implements LineSorterService {
 
     private final FileService fileService;
     private final LineGeneratorService lineGeneratorService;
@@ -26,8 +26,10 @@ public class LineSorterServiceImpl implements LineSorterService {
     public void fileGenerateAndSorter() {
         String sourceFile = applicationConfig.getSourceFile();
         File file = fileService.createFile(sourceFile);
-        IntStream.range(0, applicationConfig.getAmountLine()).forEach(e -> fileService.writeToFile(sourceFile,
-                lineGeneratorService.generate(applicationConfig.getMaxLineLength()), true));
+        IntStream.range(0, applicationConfig.getAmountLine())
+                .forEach(e -> fileService.writeToFile(sourceFile,
+                        lineGeneratorService.generate(applicationConfig.getMaxLineLength()),
+                        true));
         try {
             sortFile(file);
         } catch (IOException e) {
@@ -37,32 +39,32 @@ public class LineSorterServiceImpl implements LineSorterService {
 
     @Override
     public void sortFile(File file) throws IOException {
-        Line[] arr = new Line[2];
+        Line[] linesSort = new Line[2];
         boolean unsorted = true;
-        int li = 0;
+        int placePointer = 0;
         long countLine = getCountLine(file) - 1;
         while (unsorted) {
             unsorted = false;
             for (int i = 0; i < countLine; i++) {
-                arr[0] = getLine(file, li);
-                int step = arr[0].getValue().length() + 1;
-                arr[1] = getLine(file, li + step);
-                if (less(Line.BY_VALUE, arr[0], arr[1])) {
+                linesSort[0] = getLine(file, placePointer);
+                int step = linesSort[0].getValue().length() + 1;
+                linesSort[1] = getLine(file, placePointer + step);
+                if (less(Line.BY_VALUE, linesSort[0], linesSort[1])) {
                     writeLine(file, Line.builder()
-                            .value("%s\n%s\n".formatted(arr[1].getValue(), arr[0].getValue()))
-                            .startSimvol(arr[0].getStartSimvol())
+                            .value("%s\n%s\n".formatted(linesSort[1].getValue(), linesSort[0].getValue()))
+                            .startSymbol(linesSort[0].getStartSymbol())
                             .build());
-                    li += arr[1].getValue().length() + 1;
+                    placePointer += linesSort[1].getValue().length() + 1;
                     unsorted = true;
                 } else {
-                    li += step;
+                    placePointer += step;
                 }
             }
-            li = 0;
+            placePointer = 0;
         }
     }
 
-    private static boolean less(Comparator<Line> comparator, Line v, Line w) {
+    private boolean less(Comparator<Line> comparator, Line v, Line w) {
         return comparator.compare(v, w) > 0;
     }
 
@@ -72,18 +74,18 @@ public class LineSorterServiceImpl implements LineSorterService {
     }
 
     private Line getLine(File file, int li) throws IOException {
-        try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r")) {
+        try (var randomAccessFile = new RandomAccessFile(file, "r")) {
             randomAccessFile.seek(li);
             return Line.builder()
                     .value(randomAccessFile.readLine())
-                    .startSimvol(li)
+                    .startSymbol(li)
                     .build();
         }
     }
 
     private void writeLine(File file, Line line) throws IOException {
-        try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw")) {
-            randomAccessFile.seek(line.getStartSimvol());
+        try (var randomAccessFile = new RandomAccessFile(file, "rw")) {
+            randomAccessFile.seek(line.getStartSymbol());
             randomAccessFile.writeBytes(line.getValue());
         }
     }

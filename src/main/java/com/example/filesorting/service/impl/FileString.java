@@ -9,7 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 @Service
-public class FileServiceImpl implements FileService {
+public class FileString implements FileService {
     @Override
     public File createFile(String fileName) {
         return new File(fileName);

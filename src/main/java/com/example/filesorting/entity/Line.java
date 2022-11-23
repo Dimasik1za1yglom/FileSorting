@@ -1,4 +1,4 @@
-package com.example.filesorting.entite;
+package com.example.filesorting.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +13,7 @@ import java.util.Comparator;
 @Builder
 public class Line {
     String value;
-    int startSimvol;
+    int startSymbol;
 
     public static final Comparator<Line> BY_LENGTH = new ByLength();
     public static final Comparator<Line> BY_VALUE = new ByValueIgnoreCase();

@@ -5,19 +5,19 @@ import java.io.File;
 public interface FileService {
 
     /**
-     * создание файла
-     *
-     * @param fileName путь к файлу
-     * @return сам файл
+     * Creating a file using the received path
+     * @param fileName file path
+     * @return an object of the File class of the created file
      */
     File createFile(String fileName);
 
     /**
-     * Записать строку в файл
-     *
-     * @param pathAndFileName название файла для записи и путь
-     * @param line            добавляемая строка
-     * @param append          признак дозаписи файла
+     * Writes a string to the file using the received path.
+     * You can overwrite the file or add a new line
+     * @param pathAndFileName The path to the file to write to
+     * @param line            line to write
+     * @param append          The status of the file entry.
+     *                        True - append to an existing file, false - Overwrite an existing file
      */
     void writeToFile(String pathAndFileName, String line, boolean append);
 }
